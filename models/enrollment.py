@@ -11,4 +11,4 @@ class enrollment():
      approved_by = db.column(db.integer, db.ForeignKey('users.id'), nullable = False)
      created_at = db.column(db.Datetime, default = datetime.utcnow)
      
-     
+     admin = db.relationship('user',db.Foreign_Keys[approved_by])

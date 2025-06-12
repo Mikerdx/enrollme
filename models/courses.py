@@ -10,3 +10,6 @@ class courses():
      mentor_id = db.column(db.integer, db.ForeignKey('users.id'), nullable = False, unique = True)
      created_at = db.column(db.Datetime, default = datetime.utcnow)
      updated_at = db.column(db.datetime, default = datetime.utcnow, onupdate = datetime.utcnow)
+     
+     enrollments = db.relationship('enrollment', backref = 'course', Lazy = True)
+     reviews = db.relationship ('reviews', backref = 'course', Lazy = True)
