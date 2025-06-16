@@ -1,6 +1,6 @@
 from .user import db
 from datetime import datetime
-class reviews():
+class reviews(db.Model):
      __tablename__ = 'reviews'
      id = db.Column(db.Integer, primary_key = True)
      student_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable = False, unique = True)

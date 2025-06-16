@@ -1,6 +1,6 @@
 from .user import db
 from datetime import datetime
-class profile():
+class profile(db.Model):
      __tablename__ = 'profiles'
      id = db.Column(db.Integer, primary_key = True)
      bio = db.Column(db.Text)

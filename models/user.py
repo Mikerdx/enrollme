@@ -4,7 +4,7 @@ from sqlalchemy import MetaData
 
 metadata = MetaData()
 db = SQLAlchemy(metadata=metadata)
-class user():
+class user(db.Model):
      __tablename__ = 'users'
      
      id = db.Column(db.Integer, primary_key = True)

@@ -1,7 +1,7 @@
 from .user import db
 from datetime import datetime
 
-class courses():
+class courses(db.Model):
      __tablename__ = 'courses'
      
      id = db.Column(db.Integer, primary_key = True)
@@ -11,5 +11,5 @@ class courses():
      created_at = db.Column(db.DateTime, default = datetime.utcnow)
      updated_at = db.Column(db.DateTime, default = datetime.utcnow, onupdate = datetime.utcnow)
      
-     enrollments = db.relationship('enrollment', backref = 'course', Lazy = True)
-     reviews = db.relationship ('reviews', backref = 'course', Lazy = True)
+     enrollments = db.relationship('enrollment', backref = 'course', lazy = True)
+     reviews = db.relationship ('reviews', backref = 'course', lazy = True)
