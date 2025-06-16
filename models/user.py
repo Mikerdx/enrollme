@@ -18,3 +18,8 @@ class user(db.Model):
      courses = db.relationship('course', backref='mentor', lazy=True, foreign_keys='course.mentor_id')
      enrollments = db.relationship('enrollment', backref='student', lazy=True, foreign_keys='Enrollment.student_id')
      reviews = db.relationship('review', backref='user', lazy=True)
+     
+class TokenBlocklist(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    jti = db.Column(db.String(36), nullable=False, index=True)
+    created_at = db.Column(db.DateTime, nullable=False)

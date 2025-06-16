@@ -13,3 +13,6 @@ class courses(db.Model):
      
      enrollments = db.relationship('enrollment', backref = 'course', lazy = True)
      reviews = db.relationship ('reviews', backref = 'course', lazy = True)
+     
+     def __repr__(self):
+        return f"<Course {self.title}>"

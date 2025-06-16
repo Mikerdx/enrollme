@@ -1,7 +1,6 @@
 from flask import Flask, request, jsonify, Blueprint
 from models import db, User
 from werkzeug.security import generate_password_hash
-# Importing Flask-Mail for email functionalities
 from flask_mail import Message
 from app import app, mail
 
@@ -9,7 +8,6 @@ from app import app, mail
 user_bp = Blueprint("user_bp", __name__)
 
 
-# registering user
 @user_bp.route("/users", methods=["POST"])
 def create_user():
     data = request.get_json()
@@ -34,14 +32,12 @@ def create_user():
     new_user = User(username=username, email=email, password = generate_password_hash(password) )
     db.session.add(new_user)
 
-    # Sending a welcome email to the new user
     try:
         msg = Message(subject="Welcome to StackOverflow Clone",
         recipients=[email],
         sender=app.config['MAIL_DEFAULT_SENDER'],
         body=f"Hello {username},\n\nThank you for registering on StackOverflow Clone. We are excited to have you on board!\n\nBest regards,\nStackOverflow Clone Team")
-        mail.send(msg)        
-        # Commit the new user to the database after sending the email
+        mail.send(msg)        l
         db.session.commit()
         return jsonify({"success":"User created successfully"}), 201
 
@@ -49,9 +45,6 @@ def create_user():
         db.session.rollback()
         return jsonify({"error": "Failed to regsiter/send welcome email"}), 400
 
-
-
-# update user - block/unblock user, change username, email, admin status
 @user_bp.route("/users/<user_id>", methods=["PATCH"])
 def update_user(user_id):  
     user = User.query.get(user_id)
@@ -71,15 +64,13 @@ def update_user(user_id):
     user.email = email
     user.is_admin = is_admin
     user.is_blocked = is_blocked
-
-    #  send an email when user updates their information
+    
     try:
         msg = Message(subject="Alert! Profile Update",
         recipients=[email],
         sender=app.config['MAIL_DEFAULT_SENDER'],
         body=f"Hello {user.username},\n\nYour profile has been updated successfully on StackOverflow Clone.\n\nBest regards,\nStackOverflow Clone Team")
         mail.send(msg)        
-        # Commit the new user to the database after sending the email
         db.session.commit()
         return jsonify({"success":"User updated successfully"}), 201
 
@@ -89,7 +80,6 @@ def update_user(user_id):
    
 
 
-# get user by id
 @user_bp.route("/users/<user_id>", methods=["GET"])
 def fetch_user_by_id(user_id):
     user = User.query.get(user_id)
@@ -107,7 +97,7 @@ def fetch_user_by_id(user_id):
     }
     return jsonify(user_data), 200
 
-# get all users
+
 @user_bp.route("/users", methods=["GET"])
 def fetch_all_users():
     users = User.query.all()
@@ -126,7 +116,7 @@ def fetch_all_users():
         
     return jsonify(user_list), 200
 
-# delete user
+
 @user_bp.route("/users/<user_id>", methods=["DELETE"])
 def delete_user(user_id):
     user = User.query.get(user_id)
