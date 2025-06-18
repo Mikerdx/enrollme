@@ -7,3 +7,5 @@ from .courses import courses
 from .enrollment import enrollment
 from .profile import profile
 from .reviews import reviews
+from .user import TokenBlocklist  
+from . import db

@@ -1,11 +1,11 @@
 from flask import Blueprint, request, jsonify
-from models import db, Course
+from models import db, courses
 
 course_bp = Blueprint("course_bp", __name__)
 
 @course_bp.route("/courses", methods=["GET"])
 def get_courses():
-    courses = Course.query.all()
+    courses = courses.query.all()
     return jsonify([{
         "id": course.id,
         "title": course.title,
@@ -15,7 +15,7 @@ def get_courses():
 
 @course_bp.route("/courses/<int:id>", methods=["GET"])
 def get_course(id):
-    course = Course.query.get(id)
+    course = courses.query.get(id)
     if not course:
         return jsonify({"error": "Course not found"}), 404
     return jsonify({
@@ -35,7 +35,7 @@ def create_course():
     if not title or not schedule or not description:
         return jsonify({"error": "All fields are required"}), 400
 
-    new_course = Course(title=title, schedule=schedule, description=description)
+    new_course = courses(title=title, schedule=schedule, description=description)
     db.session.add(new_course)
     db.session.commit()
 
@@ -51,7 +51,7 @@ def create_course():
 
 @course_bp.route("/courses/<int:id>", methods=["PATCH"])
 def update_course(id):
-    course = Course.query.get(id)
+    course = courses.query.get(id)
     if not course:
         return jsonify({"error": "Course not found"}), 404
 
@@ -74,7 +74,7 @@ def update_course(id):
 
 @course_bp.route("/courses/<int:id>", methods=["DELETE"])
 def delete_course(id):
-    course = Course.query.get(id)
+    course = courses.query.get(id)
     if not course:
         return jsonify({"error": "Course not found"}), 404
 

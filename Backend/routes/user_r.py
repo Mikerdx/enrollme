@@ -1,8 +1,10 @@
 from flask import Flask, request, jsonify, Blueprint
-from models import db, User
+from models import db
+from models.user import user
 from werkzeug.security import generate_password_hash
 from flask_mail import Message
-from Backend.app import app, mail
+from flask import current_app
+
 
 
 user_bp = Blueprint("user_bp", __name__)
@@ -20,8 +22,8 @@ def create_user():
     if not username or not email or not password:
         return jsonify({"error": "Username, email and password are required"}), 400
      
-    username_exists = User.query.filter_by(username=username).first()
-    email_exists = User.query.filter_by(email=email).first()
+    username_exists = user.query.filter_by(username=username).first()
+    email_exists = user.query.filter_by(email=email).first()
 
     if username_exists:
         return jsonify({"error": "Username already exists"}), 400
@@ -29,15 +31,15 @@ def create_user():
     if email_exists:
         return jsonify({"error": "Email already exists"}), 400
 
-    new_user = User(username=username, email=email, password = generate_password_hash(password) )
+    new_user = user(username=username, email=email, password = generate_password_hash(password) )
     db.session.add(new_user)
 
     try:
         msg = Message(subject="Welcome to StackOverflow Clone",
         recipients=[email],
-        sender=app.config['MAIL_DEFAULT_SENDER'],
+        sender=current_app.config['MAIL_DEFAULT_SENDER'],
         body=f"Hello {username},\n\nThank you for registering on StackOverflow Clone. We are excited to have you on board!\n\nBest regards,\nStackOverflow Clone Team")
-        mail.send(msg)        
+        current_app.extensions['mail'].send(msg)       
         db.session.commit()
         return jsonify({"success":"User created successfully"}), 201
 
@@ -47,7 +49,7 @@ def create_user():
 
 @user_bp.route("/users/<user_id>", methods=["PATCH"])
 def update_user(user_id):  
-    user = User.query.get(user_id)
+    user = user.query.get(user_id)
 
     if not user:
         return jsonify({"error": "User not found"}), 404
@@ -68,9 +70,9 @@ def update_user(user_id):
     try:
         msg = Message(subject="Alert! Profile Update",
         recipients=[email],
-        sender=app.config['MAIL_DEFAULT_SENDER'],
+        sender=current_app.config['MAIL_DEFAULT_SENDER'],
         body=f"Hello {user.username},\n\nYour profile has been updated successfully on StackOverflow Clone.\n\nBest regards,\nStackOverflow Clone Team")
-        mail.send(msg)        
+        current_app.extensions['mail'].send(msg)       
         db.session.commit()
         return jsonify({"success":"User updated successfully"}), 201
 
@@ -82,7 +84,7 @@ def update_user(user_id):
 
 @user_bp.route("/users/<user_id>", methods=["GET"])
 def fetch_user_by_id(user_id):
-    user = User.query.get(user_id)
+    user = user.query.get(user_id)
 
     if not user:
         return jsonify({"error": "User not found"}), 404
@@ -100,7 +102,7 @@ def fetch_user_by_id(user_id):
 
 @user_bp.route("/users", methods=["GET"])
 def fetch_all_users():
-    users = User.query.all()
+    users = user.query.all()
 
     user_list = []
     for user in users:
@@ -119,7 +121,7 @@ def fetch_all_users():
 
 @user_bp.route("/users/<user_id>", methods=["DELETE"])
 def delete_user(user_id):
-    user = User.query.get(user_id)
+    user = user.query.get(user_id)
 
     if not user:
         return jsonify({"error": "User not found"}), 404
