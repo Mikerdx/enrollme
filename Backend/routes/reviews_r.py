@@ -1,24 +1,24 @@
 from flask import Blueprint, request, jsonify
-from models import db, reviews, courses, user
+from models import db, Reviews, Course, User
 
-reviews_bp = Blueprint("reviews_bp", __name__)
+Reviews_bp = Blueprint("Reviews_bp", __name__)
 
 
-@reviews_bp.route("/reviews", methods=["GET"])
-def get_all_reviews():
-    reviews = reviews.query.all()
+@Reviews_bp.route("/Reviews", methods=["GET"])
+def get_all_Reviews():
+    Reviews = Reviews.query.all()
     return jsonify([{
         "id": r.id,
         "content": r.content,
         "rating": r.rating,
         "course_id": r.course_id,
-        "user_id": r.user_id
-    } for r in reviews]), 200
+        "User_id": r.User_id
+    } for r in Reviews]), 200
 
 
-@reviews_bp.route("/reviews/<int:id>", methods=["GET"])
+@Reviews_bp.route("/Reviews/<int:id>", methods=["GET"])
 def get_review(id):
-    review = reviews.query.get(id)
+    review = Reviews.query.get(id)
     if not review:
         return jsonify({"error": "Review not found"}), 404
     return jsonify({
@@ -26,27 +26,27 @@ def get_review(id):
         "content": review.content,
         "rating": review.rating,
         "course_id": review.course_id,
-        "user_id": review.user_id
+        "User_id": review.User_id
     }), 200
 
 
-@reviews_bp.route("/reviews", methods=["POST"])
+@Reviews_bp.route("/Reviews", methods=["POST"])
 def create_review():
     data = request.get_json()
     content = data.get("content")
     rating = data.get("rating")
     course_id = data.get("course_id")
-    user_id = data.get("user_id")
+    User_id = data.get("User_id")
 
-    if not all([content, rating, course_id, user_id]):
+    if not all([content, rating, course_id, User_id]):
         return jsonify({"error": "All fields are required"}), 400
 
     course = course.query.get(course_id)
-    user = user.query.get(user_id)
-    if not course or not user:
-        return jsonify({"error": "Invalid course or user ID"}), 404
+    User = User.query.get(User_id)
+    if not course or not User:
+        return jsonify({"error": "Invalid course or User ID"}), 404
 
-    new_review = reviews(content=content, rating=rating, course_id=course_id, user_id=user_id)
+    new_review = Reviews(content=content, rating=rating, course_id=course_id, User_id=User_id)
     db.session.add(new_review)
     db.session.commit()
 
@@ -57,14 +57,14 @@ def create_review():
             "content": new_review.content,
             "rating": new_review.rating,
             "course_id": new_review.course_id,
-            "user_id": new_review.user_id
+            "User_id": new_review.User_id
         }
     }), 201
 
 
-@reviews_bp.route("/reviews/<int:id>", methods=["PATCH"])
+@Reviews_bp.route("/Reviews/<int:id>", methods=["PATCH"])
 def update_review(id):
-    review = reviews.query.get(id)
+    review = Reviews.query.get(id)
     if not review:
         return jsonify({"error": "Review not found"}), 404
 
@@ -81,14 +81,14 @@ def update_review(id):
             "content": review.content,
             "rating": review.rating,
             "course_id": review.course_id,
-            "user_id": review.user_id
+            "User_id": review.User_id
         }
     }), 200
 
 
-@reviews_bp.route("/reviews/<int:id>", methods=["DELETE"])
+@Reviews_bp.route("/Reviews/<int:id>", methods=["DELETE"])
 def delete_review(id):
-    review = reviews.query.get(id)
+    review = Reviews.query.get(id)
     if not review:
         return jsonify({"error": "Review not found"}), 404
 

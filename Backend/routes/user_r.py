@@ -1,44 +1,44 @@
 from flask import Flask, request, jsonify, Blueprint
 from models import db
-from models.user import user
+from models.user import User
 from werkzeug.security import generate_password_hash
 from flask_mail import Message
 from flask import current_app
 
 
 
-user_bp = Blueprint("user_bp", __name__)
+User_bp = Blueprint("User_bp", __name__)
 
 
-@user_bp.route("/users", methods=["POST"])
-def create_user():
+@User_bp.route("/Users", methods=["POST"])
+def create_User():
     data = request.get_json()
 
-    username = data.get("username")
+    Username = data.get("Username")
     email = data.get("email")
     password = data.get("password")
 
 
-    if not username or not email or not password:
+    if not Username or not email or not password:
         return jsonify({"error": "Username, email and password are required"}), 400
      
-    username_exists = user.query.filter_by(username=username).first()
-    email_exists = user.query.filter_by(email=email).first()
+    Username_exists = User.query.filter_by(Username=Username).first()
+    email_exists = User.query.filter_by(email=email).first()
 
-    if username_exists:
+    if Username_exists:
         return jsonify({"error": "Username already exists"}), 400
 
     if email_exists:
         return jsonify({"error": "Email already exists"}), 400
 
-    new_user = user(username=username, email=email, password = generate_password_hash(password) )
-    db.session.add(new_user)
+    new_User = User(Username=Username, email=email, password = generate_password_hash(password) )
+    db.session.add(new_User)
 
     try:
         msg = Message(subject="Welcome to StackOverflow Clone",
         recipients=[email],
         sender=current_app.config['MAIL_DEFAULT_SENDER'],
-        body=f"Hello {username},\n\nThank you for registering on StackOverflow Clone. We are excited to have you on board!\n\nBest regards,\nStackOverflow Clone Team")
+        body=f"Hello {Username},\n\nThank you for registering on StackOverflow Clone. We are excited to have you on board!\n\nBest regards,\nStackOverflow Clone Team")
         current_app.extensions['mail'].send(msg)       
         db.session.commit()
         return jsonify({"success":"User created successfully"}), 201
@@ -47,31 +47,31 @@ def create_user():
         db.session.rollback()
         return jsonify({"error": "Failed to regsiter/send welcome email"}), 400
 
-@user_bp.route("/users/<user_id>", methods=["PATCH"])
-def update_user(user_id):  
-    user = user.query.get(user_id)
+@User_bp.route("/Users/<User_id>", methods=["PATCH"])
+def update_User(User_id):  
+    User = User.query.get(User_id)
 
-    if not user:
+    if not User:
         return jsonify({"error": "User not found"}), 404
 
     data = request.get_json()
   
-    username = data.get("username",user.username)
-    email = data.get("email", user.email)
-    is_admin = data.get("is_admin", user.is_admin)
-    is_blocked = data.get("is_blocked", user.is_blocked)
+    Username = data.get("Username",User.Username)
+    email = data.get("email", User.email)
+    is_admin = data.get("is_admin", User.is_admin)
+    is_blocked = data.get("is_blocked", User.is_blocked)
 
     
-    user.username = username
-    user.email = email
-    user.is_admin = is_admin
-    user.is_blocked = is_blocked
+    User.Username = Username
+    User.email = email
+    User.is_admin = is_admin
+    User.is_blocked = is_blocked
     
     try:
         msg = Message(subject="Alert! Profile Update",
         recipients=[email],
         sender=current_app.config['MAIL_DEFAULT_SENDER'],
-        body=f"Hello {user.username},\n\nYour profile has been updated successfully on StackOverflow Clone.\n\nBest regards,\nStackOverflow Clone Team")
+        body=f"Hello {User.Username},\n\nYour Profile has been updated successfully on StackOverflow Clone.\n\nBest regards,\nStackOverflow Clone Team")
         current_app.extensions['mail'].send(msg)       
         db.session.commit()
         return jsonify({"success":"User updated successfully"}), 201
@@ -82,51 +82,51 @@ def update_user(user_id):
    
 
 
-@user_bp.route("/users/<user_id>", methods=["GET"])
-def fetch_user_by_id(user_id):
-    user = user.query.get(user_id)
+@User_bp.route("/Users/<User_id>", methods=["GET"])
+def fetch_User_by_id(User_id):
+    User = User.query.get(User_id)
 
-    if not user:
+    if not User:
         return jsonify({"error": "User not found"}), 404
 
-    user_data = {
-        "id": user.id,
-        "username": user.username,
-        "email": user.email,
-        "is_admin": user.is_admin,
-        "is_blocked": user.is_blocked,
-        "created_at": user.created_at,
+    User_data = {
+        "id": User.id,
+        "Username": User.Username,
+        "email": User.email,
+        "is_admin": User.is_admin,
+        "is_blocked": User.is_blocked,
+        "created_at": User.created_at,
     }
-    return jsonify(user_data), 200
+    return jsonify(User_data), 200
 
 
-@user_bp.route("/users", methods=["GET"])
-def fetch_all_users():
-    users = user.query.all()
+@User_bp.route("/Users", methods=["GET"])
+def fetch_all_Users():
+    Users = User.query.all()
 
-    user_list = []
-    for user in users:
-        user_data = {
-            "id": user.id,
-            "username": user.username,
-            "email": user.email,
-            "is_admin": user.is_admin,
-            "is_blocked": user.is_blocked,
-            "created_at": user.created_at
+    User_list = []
+    for User in Users:
+        User_data = {
+            "id": User.id,
+            "Username": User.Username,
+            "email": User.email,
+            "is_admin": User.is_admin,
+            "is_blocked": User.is_blocked,
+            "created_at": User.created_at
         }
-        user_list.append(user_data)
+        User_list.append(User_data)
         
-    return jsonify(user_list), 200
+    return jsonify(User_list), 200
 
 
-@user_bp.route("/users/<user_id>", methods=["DELETE"])
-def delete_user(user_id):
-    user = user.query.get(user_id)
+@User_bp.route("/Users/<User_id>", methods=["DELETE"])
+def delete_User(User_id):
+    User = User.query.get(User_id)
 
-    if not user:
+    if not User:
         return jsonify({"error": "User not found"}), 404
 
-    db.session.delete(user)
+    db.session.delete(User)
     db.session.commit()
 
     return jsonify({"success": "User deleted successfully"}), 200

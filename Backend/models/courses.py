@@ -1,18 +1,18 @@
 from .user import db
 from datetime import datetime
 
-class courses(db.Model):
-     __tablename__ = 'courses'
+class Course(db.Model):
+    __tablename__ = 'courses' 
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(255), nullable=False, unique=True)
+    description = db.Column(db.Text, nullable=False)
+    mentor_id = db.Column(db.Integer, db.ForeignKey('Users.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
      
-     id = db.Column(db.Integer, primary_key = True)
-     title = db.Column(db.String(255), nullable = False, unique = True)
-     description = db.Column(db.Text(255), nullable = False)
-     mentor_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable = False, unique = True)
-     created_at = db.Column(db.DateTime, default = datetime.utcnow)
-     updated_at = db.Column(db.DateTime, default = datetime.utcnow, onupdate = datetime.utcnow)
+    Enrollments = db.relationship('Enrollment', backref = 'Course', lazy = True)
+    Reviews = db.relationship ('Reviews', backref = 'Course', lazy = True)
      
-     enrollments = db.relationship('enrollment', backref = 'course', lazy = True)
-     reviews = db.relationship ('reviews', backref = 'course', lazy = True)
-     
-     def __repr__(self):
+    def __repr__(self):
         return f"<Course {self.title}>"

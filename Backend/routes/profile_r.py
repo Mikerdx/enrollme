@@ -1,74 +1,74 @@
 from flask import Blueprint, request, jsonify
-from models import db, profile, user
+from models import db, Profile, User
 
-profile_bp = Blueprint("profile_bp", __name__)
+Profile_bp = Blueprint("Profile_bp", __name__)
 
 
-@profile_bp.route("/profiles", methods=["GET"])
-def get_profiles():
-    profiles = profile.query.all()
+@Profile_bp.route("/Profiles", methods=["GET"])
+def get_Profiles():
+    Profiles = Profile.query.all()
     return jsonify([{
         "id": p.id,
         "bio": p.bio,
         "location": p.location,
-        "user_id": p.user_id
-    } for p in profiles]), 200
+        "User_id": p.User_id
+    } for p in Profiles]), 200
 
 
-@profile_bp.route("/profiles/<int:id>", methods=["GET"])
-def get_profile(id):
-    profile = profile.query.get(id)
-    if not profile:
+@Profile_bp.route("/Profiles/<int:id>", methods=["GET"])
+def get_Profile(id):
+    Profile = Profile.query.get(id)
+    if not Profile:
         return jsonify({"error": "Profile not found"}), 404
 
     return jsonify({
-        "id": profile.id,
-        "bio": profile.bio,
-        "location": profile.location,
-        "user_id": profile.user_id
+        "id": Profile.id,
+        "bio": Profile.bio,
+        "location": Profile.location,
+        "User_id": Profile.User_id
     }), 200
 
 
-@profile_bp.route("/profiles", methods=["POST"])
-def create_profile():
+@Profile_bp.route("/Profiles", methods=["POST"])
+def create_Profile():
     data = request.get_json()
     bio = data.get("bio")
     location = data.get("location")
-    user_id = data.get("user_id")
+    User_id = data.get("User_id")
 
-    if not user_id:
-        return jsonify({"error": "user_id is required"}), 400
+    if not User_id:
+        return jsonify({"error": "User_id is required"}), 400
 
-    user = user.query.get(user_id)
-    if not user:
+    User = User.query.get(User_id)
+    if not User:
         return jsonify({"error": "User not found"}), 404
 
-    profile = profile(bio=bio, location=location, user_id=user_id)
-    db.session.add(profile)
+    Profile = Profile(bio=bio, location=location, User_id=User_id)
+    db.session.add(Profile)
     db.session.commit()
 
-    return jsonify({"message": "Profile created", "profile_id": profile.id}), 201
+    return jsonify({"message": "Profile created", "Profile_id": Profile.id}), 201
 
 
-@profile_bp.route("/profiles/<int:id>", methods=["PATCH"])
-def update_profile(id):
-    profile = profile.query.get(id)
-    if not profile:
+@Profile_bp.route("/Profiles/<int:id>", methods=["PATCH"])
+def update_Profile(id):
+    Profile = Profile.query.get(id)
+    if not Profile:
         return jsonify({"error": "Profile not found"}), 404
 
     data = request.get_json()
-    profile.bio = data.get("bio", profile.bio)
-    profile.location = data.get("location", profile.location)
+    Profile.bio = data.get("bio", Profile.bio)
+    Profile.location = data.get("location", Profile.location)
 
     db.session.commit()
     return jsonify({"message": "Profile updated"}), 200
 
-@profile_bp.route("/profiles/<int:id>", methods=["DELETE"])
-def delete_profile(id):
-    profile = profile.query.get(id)
-    if not profile:
+@Profile_bp.route("/Profiles/<int:id>", methods=["DELETE"])
+def delete_Profile(id):
+    Profile = Profile.query.get(id)
+    if not Profile:
         return jsonify({"error": "Profile not found"}), 404
 
-    db.session.delete(profile)
+    db.session.delete(Profile)
     db.session.commit()
     return jsonify({"message": "Profile deleted"}), 200

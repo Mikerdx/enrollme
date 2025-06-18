@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify, Blueprint
-from models import db, user, TokenBlocklist
+from models import db, User, TokenBlocklist
 from werkzeug.security import check_password_hash
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
 from datetime import datetime
@@ -19,36 +19,36 @@ def login():
     if not email or not password:
         return jsonify({"error": "email and password are required to login"}), 400
      
-    user = user.query.filter_by(email=email).first()
+    User = User.query.filter_by(email=email).first()
 
-    if user and check_password_hash(user.password, password):
-        access_token = create_access_token(identity=user.id)
+    if User and check_password_hash(User.password, password):
+        access_token = create_access_token(identity=User.id)
         return jsonify(access_token=access_token)     
 
     else:
         return jsonify({"error": "User does not exists/wrong details"}), 400
 
     
-#  fetching logged in user
-@auth_bp.route("/current_user", methods=["GET"])
+#  fetching logged in User
+@auth_bp.route("/current_User", methods=["GET"])
 @jwt_required()
-def fetch_current_user():
-    current_user_id = get_jwt_identity()
+def fetch_current_User():
+    current_User_id = get_jwt_identity()
 
-    user = user.query.get(current_user_id)
+    User = User.query.get(current_User_id)
 
-    if not user:
+    if not User:
         return jsonify({"error": "User not found"}), 404
 
-    user_data = {
-        "id": user.id,
-        "username": user.username,
-        "email": user.email,
-        "is_admin": user.is_admin,
-        "is_blocked": user.is_blocked,
-        "created_at": user.created_at
+    User_data = {
+        "id": User.id,
+        "Username": User.Username,
+        "email": User.email,
+        "is_admin": User.is_admin,
+        "is_blocked": User.is_blocked,
+        "created_at": User.created_at
     }
-    return jsonify(user_data), 200
+    return jsonify(User_data), 200
 
 
 

@@ -1,21 +1,21 @@
 from flask import Blueprint, request, jsonify
-from models import db, courses
+from models import db, Course
 
 course_bp = Blueprint("course_bp", __name__)
 
-@course_bp.route("/courses", methods=["GET"])
-def get_courses():
-    courses = courses.query.all()
+@course_bp.route("/Course", methods=["GET"])
+def get_Course():
+    Course = Course.query.all()
     return jsonify([{
         "id": course.id,
         "title": course.title,
         "schedule": course.schedule,
         "description": course.description
-    } for course in courses]), 200
+    } for course in Course]), 200
 
-@course_bp.route("/courses/<int:id>", methods=["GET"])
+@course_bp.route("/Course/<int:id>", methods=["GET"])
 def get_course(id):
-    course = courses.query.get(id)
+    course = Course.query.get(id)
     if not course:
         return jsonify({"error": "Course not found"}), 404
     return jsonify({
@@ -25,7 +25,7 @@ def get_course(id):
         "description": course.description
     }), 200
 
-@course_bp.route("/courses", methods=["POST"])
+@course_bp.route("/Course", methods=["POST"])
 def create_course():
     data = request.get_json()
     title = data.get("title")
@@ -35,7 +35,7 @@ def create_course():
     if not title or not schedule or not description:
         return jsonify({"error": "All fields are required"}), 400
 
-    new_course = courses(title=title, schedule=schedule, description=description)
+    new_course = Course(title=title, schedule=schedule, description=description)
     db.session.add(new_course)
     db.session.commit()
 
@@ -49,9 +49,9 @@ def create_course():
         }
     }), 201
 
-@course_bp.route("/courses/<int:id>", methods=["PATCH"])
+@course_bp.route("/Course/<int:id>", methods=["PATCH"])
 def update_course(id):
-    course = courses.query.get(id)
+    course = Course.query.get(id)
     if not course:
         return jsonify({"error": "Course not found"}), 404
 
@@ -72,9 +72,9 @@ def update_course(id):
         }
     }), 200
 
-@course_bp.route("/courses/<int:id>", methods=["DELETE"])
+@course_bp.route("/Course/<int:id>", methods=["DELETE"])
 def delete_course(id):
-    course = courses.query.get(id)
+    course = Course.query.get(id)
     if not course:
         return jsonify({"error": "Course not found"}), 404
 

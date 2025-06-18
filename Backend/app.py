@@ -8,9 +8,10 @@ from routes.auth import auth_bp
 from models import db
 from models.user import TokenBlocklist
 from routes.courses_r import course_bp
-from routes.reviews_r import reviews_bp
-from routes.enrollment_r import enrollment_bp
-from routes.profile_r import profile_bp
+from routes.reviews_r import Reviews_bp
+from routes.enrollment_r import Enrollment_bp
+from routes.profile_r import Profile_bp
+from routes.user_r import User_bp
 from flask_cors import CORS
 
 app = Flask(__name__)
@@ -23,7 +24,7 @@ app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 587
 app.config['MAIL_USE_TLS'] = True
 app.config['MAIL_USE_SSL'] = False
-app.config['MAIL_USERNAME'] = 'manmike@gmail.com'
+app.config['MAIL_UserNAME'] = 'manmike@gmail.com'
 app.config['MAIL_PASSWORD'] = '45719370m'
 app.config['MAIL_DEFAULT_SENDER'] = 'manmike@gmail.com'
 
@@ -46,9 +47,10 @@ def index():
 
 app.register_blueprint(auth_bp, url_prefix="/auth")
 app.register_blueprint(course_bp)
-app.register_blueprint(reviews_bp)
-app.register_blueprint(enrollment_bp)
-app.register_blueprint(profile_bp)
+app.register_blueprint(Reviews_bp)
+app.register_blueprint(Enrollment_bp)
+app.register_blueprint(Profile_bp)
+app.register_blueprint(User_bp)
 
 @jwt.token_in_blocklist_loader
 def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
