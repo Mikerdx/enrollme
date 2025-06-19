@@ -16,7 +16,6 @@ from flask_cors import CORS
 
 app = Flask(__name__)
 
-
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
@@ -28,22 +27,19 @@ app.config['MAIL_USERNAME'] = 'mman73942@gmail.com'
 app.config['MAIL_PASSWORD'] = 'flhk jhao patw tgbn'
 app.config['MAIL_DEFAULT_SENDER'] = 'mman73942@gmail.com'
 
-
 app.config['JWT_SECRET_KEY'] = 'sjusefvyilgfvksbhvfiknhalvufn'
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=2)
 app.config["JWT_VERIFY_SUB"] = False
 
+CORS(app)
 db.init_app(app)
 migrate = Migrate(app, db)
 mail = Mail(app)
 jwt = JWTManager(app)
-jwt.init_app(app)
-CORS(app)
 
 @app.route("/")
 def index():
     return "<h1>Course Enrollment App is running!</h1>"
-
 
 app.register_blueprint(auth_bp, url_prefix="/auth")
 app.register_blueprint(course_bp)
@@ -56,7 +52,6 @@ app.register_blueprint(User_bp)
 def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
     jti = jwt_payload["jti"]
     token = db.session.query(TokenBlocklist.id).filter_by(jti=jti).scalar()
-
     return token is not None
 
 if __name__ == "__main__":

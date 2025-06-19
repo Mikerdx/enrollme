@@ -5,13 +5,12 @@ course_bp = Blueprint("course_bp", __name__)
 
 @course_bp.route("/Course", methods=["GET"])
 def get_Course():
-    Course = Course.query.all()
+    courses = Course.query.all()
     return jsonify([{
         "id": course.id,
         "title": course.title,
-        "schedule": course.schedule,
         "description": course.description
-    } for course in Course]), 200
+    } for course in courses]), 200
 
 @course_bp.route("/Course/<int:id>", methods=["GET"])
 def get_course(id):
@@ -21,7 +20,6 @@ def get_course(id):
     return jsonify({
         "id": course.id,
         "title": course.title,
-        "schedule": course.schedule,
         "description": course.description
     }), 200
 
@@ -29,13 +27,13 @@ def get_course(id):
 def create_course():
     data = request.get_json()
     title = data.get("title")
-    schedule = data.get("schedule")
     description = data.get("description")
+    mentor_id = data.get("mentor_id")
 
-    if not title or not schedule or not description:
+    if not title or not description or not mentor_id:
         return jsonify({"error": "All fields are required"}), 400
 
-    new_course = Course(title=title, schedule=schedule, description=description)
+    new_course = Course(title=title, description=description, mentor_id=mentor_id)
     db.session.add(new_course)
     db.session.commit()
 
@@ -44,8 +42,8 @@ def create_course():
         "course": {
             "id": new_course.id,
             "title": new_course.title,
-            "schedule": new_course.schedule,
-            "description": new_course.description
+            "description": new_course.description,
+            "mentor_id": new_course.mentor_id
         }
     }), 201
 
@@ -57,9 +55,7 @@ def update_course(id):
 
     data = request.get_json()
     course.title = data.get("title", course.title)
-    course.schedule = data.get("schedule", course.schedule)
     course.description = data.get("description", course.description)
-
     db.session.commit()
 
     return jsonify({
@@ -67,7 +63,6 @@ def update_course(id):
         "course": {
             "id": course.id,
             "title": course.title,
-            "schedule": course.schedule,
             "description": course.description
         }
     }), 200
