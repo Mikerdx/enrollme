@@ -19,10 +19,10 @@ def login():
     if not email or not password:
         return jsonify({"error": "email and password are required to login"}), 400
      
-    User = User.query.filter_by(email=email).first()
+    user = User.query.filter_by(email=email).first()
 
-    if User and check_password_hash(User.password, password):
-        access_token = create_access_token(identity=User.id)
+    if user and check_password_hash(user.password, password):
+        access_token = create_access_token(identity=user.id)
         return jsonify(access_token=access_token)     
 
     else:
