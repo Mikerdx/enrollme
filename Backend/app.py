@@ -11,8 +11,11 @@ from routes.courses_r import course_bp
 from routes.reviews_r import Reviews_bp
 from routes.enrollment_r import Enrollment_bp
 from routes.profile_r import Profile_bp
+from routes.mentor_r import mentor_bp
 from routes.user_r import User_bp
 from flask_cors import CORS
+from auth_decorators import admin_required, mentor_required, student_required
+
 
 app = Flask(__name__)
 
@@ -47,12 +50,14 @@ app.register_blueprint(Reviews_bp)
 app.register_blueprint(Enrollment_bp)
 app.register_blueprint(Profile_bp)
 app.register_blueprint(User_bp)
+app.register_blueprint(mentor_bp)
 
 @jwt.token_in_blocklist_loader
 def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
     jti = jwt_payload["jti"]
     token = db.session.query(TokenBlocklist.id).filter_by(jti=jti).scalar()
     return token is not None
+
 
 if __name__ == "__main__":
     app.run(debug=True)

@@ -1,9 +1,13 @@
 from flask import Blueprint, request, jsonify
 from models import db, Course
+from auth_decorators import admin_required, mentor_required
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from models.user import User
 
 course_bp = Blueprint("course_bp", __name__)
 
 @course_bp.route("/Course", methods=["GET"])
+@jwt_required()
 def get_Course():
     courses = Course.query.all()
     return jsonify([{
@@ -12,7 +16,19 @@ def get_Course():
         "description": course.description
     } for course in courses]), 200
 
+@course_bp.route("/Course/my", methods=["GET"])
+@mentor_required
+def get_my_courses():
+    user_id = get_jwt_identity()
+    courses = Course.query.filter_by(mentor_id=user_id).all()
+    return jsonify([{
+        "id": c.id,
+        "title": c.title,
+        "description": c.description
+    } for c in courses]), 200
+
 @course_bp.route("/Course/<int:id>", methods=["GET"])
+@jwt_required()
 def get_course(id):
     course = Course.query.get(id)
     if not course:
@@ -24,6 +40,7 @@ def get_course(id):
     }), 200
 
 @course_bp.route("/Course", methods=["POST"])
+@admin_required
 def create_course():
     data = request.get_json()
     title = data.get("title")
@@ -48,6 +65,7 @@ def create_course():
     }), 201
 
 @course_bp.route("/Course/<int:id>", methods=["PATCH"])
+@admin_required
 def update_course(id):
     course = Course.query.get(id)
     if not course:
@@ -68,6 +86,7 @@ def update_course(id):
     }), 200
 
 @course_bp.route("/Course/<int:id>", methods=["DELETE"])
+@admin_required
 def delete_course(id):
     course = Course.query.get(id)
     if not course:
@@ -75,5 +94,4 @@ def delete_course(id):
 
     db.session.delete(course)
     db.session.commit()
-
     return jsonify({"message": "Course deleted successfully"}), 200

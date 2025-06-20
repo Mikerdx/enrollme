@@ -3,6 +3,8 @@ from models import db
 from models.user import User
 from werkzeug.security import generate_password_hash
 from flask_mail import Message
+from flask_jwt_extended import jwt_required, get_jwt_identity
+from auth_decorators import admin_required
 
 User_bp = Blueprint("User_bp", __name__)
 
@@ -37,11 +39,29 @@ def create_user():
         current_app.extensions['mail'].send(msg)
         db.session.commit()
         return jsonify({"success": "User created successfully"}), 201
-    except Exception as e:
+    except Exception:
         db.session.rollback()
         return jsonify({"error": "Failed to register/send welcome email"}), 400
 
+@User_bp.route("/Users/me", methods=["GET"])
+@jwt_required()
+def fetch_my_profile():
+    user_id = get_jwt_identity()
+    user = User.query.get(user_id)
+    if not user:
+        return jsonify({"error": "User not found"}), 404
+
+    return jsonify({
+        "id": user.id,
+        "Username": user.Username,
+        "email": user.email,
+        "role": user.role,
+        "is_blocked": user.is_blocked,
+        "created_at": user.created_at
+    }), 200
+
 @User_bp.route("/Users/<int:user_id>", methods=["PATCH"])
+@admin_required
 def update_user(user_id):
     user = User.query.get(user_id)
     if not user:
@@ -63,11 +83,12 @@ def update_user(user_id):
         current_app.extensions['mail'].send(msg)
         db.session.commit()
         return jsonify({"success": "User updated successfully"}), 200
-    except Exception as e:
+    except Exception:
         db.session.rollback()
         return jsonify({"error": "Failed to update/send notification email"}), 400
 
 @User_bp.route("/Users/<int:user_id>", methods=["GET"])
+@admin_required
 def fetch_user_by_id(user_id):
     user = User.query.get(user_id)
     if not user:
@@ -83,6 +104,7 @@ def fetch_user_by_id(user_id):
     }), 200
 
 @User_bp.route("/Users", methods=["GET"])
+@admin_required
 def fetch_all_users():
     users = User.query.all()
     return jsonify([{
@@ -95,6 +117,7 @@ def fetch_all_users():
     } for u in users]), 200
 
 @User_bp.route("/Users/<int:user_id>", methods=["DELETE"])
+@admin_required
 def delete_user(user_id):
     user = User.query.get(user_id)
     if not user:

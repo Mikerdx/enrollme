@@ -18,7 +18,11 @@ def login():
 
     if user and check_password_hash(user.password, password):
         access_token = create_access_token(identity=user.id)
-        return jsonify(access_token=access_token)
+        return jsonify({
+            "access_token": access_token,
+            "role": user.role,
+            "username": user.Username
+        }), 200
     else:
         return jsonify({"error": "User does not exist or wrong credentials"}), 400
 
