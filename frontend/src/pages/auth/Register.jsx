@@ -1,5 +1,5 @@
 import React, { useState, useContext } from "react";
-import { UserContext } from "../context/UserContext";
+import { UserContext } from "../../context/UserContext";
 import { Link } from "react-router-dom";
 
 const Register = () => {
@@ -64,7 +64,7 @@ const Register = () => {
           </button>
         </form>
         <p className="mt-3 text-center text-muted">
-          Already have an account?{" "}
+          Already have an account?{' '}
           <Link to="/login" className="text-decoration-none text-primary fw-bold">
             Login
           </Link>
