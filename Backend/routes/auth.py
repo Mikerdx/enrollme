@@ -3,10 +3,12 @@ from models import db, User, TokenBlocklist
 from werkzeug.security import check_password_hash
 from flask_jwt_extended import create_access_token, jwt_required, get_jwt_identity, get_jwt
 from datetime import datetime, timezone
+from flask_cors import cross_origin
 
 auth_bp = Blueprint("auth_bp", __name__)
 
 @auth_bp.route("/login", methods=["POST"])
+@cross_origin(origin="http://127.0.0.1:5173", supports_credentials=True)
 def login():
     email = request.json.get("email")
     password = request.json.get("password")

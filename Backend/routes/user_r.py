@@ -5,10 +5,12 @@ from werkzeug.security import generate_password_hash
 from flask_mail import Message
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from auth_decorators import admin_required
+from flask_cors import cross_origin
 
 User_bp = Blueprint("User_bp", __name__)
 
 @User_bp.route("/Users", methods=["POST"])
+@cross_origin(origin="http://127.0.0.1:5173", supports_credentials=True)
 def create_user():
     data = request.get_json()
 

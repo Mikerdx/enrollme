@@ -34,7 +34,8 @@ app.config['JWT_SECRET_KEY'] = 'sjusefvyilgfvksbhvfiknhalvufn'
 app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=2)
 app.config["JWT_VERIFY_SUB"] = False
 
-CORS(app)
+
+CORS(app, resources={r"/*": {"origins": "http://127.0.0.1:5173"}}, supports_credentials=True)
 db.init_app(app)
 migrate = Migrate(app, db)
 mail = Mail(app)

@@ -1,19 +1,19 @@
-import React from 'react';
-import ReactDOM from 'react-dom/client';
-import App from './App';
+import { StrictMode } from 'react';
+import { createRoot } from 'react-dom/client';
 import { BrowserRouter } from 'react-router-dom';
-import { UserProvider } from './context/UserContext';
-import 'react-toastify/dist/ReactToastify.css';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { ToastContainer } from 'react-toastify';
+import './index.css';
+import App from './App.jsx';
+import { UserProvider } from './context/UserContext';
 
-ReactDOM.createRoot(document.getElementById('root')).render(
-  <React.StrictMode>
+const root = document.getElementById('root');
+
+createRoot(root).render(
+  <StrictMode>
     <BrowserRouter>
       <UserProvider>
-        <ToastContainer />
         <App />
       </UserProvider>
     </BrowserRouter>
-  </React.StrictMode>
+  </StrictMode>
 );

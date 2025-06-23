@@ -1,5 +1,6 @@
 from .user import db
 from datetime import datetime
+from sqlalchemy import UniqueConstraint
 
 class Enrollment(db.Model):
     __tablename__ = 'Enrollments'
@@ -13,3 +14,7 @@ class Enrollment(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     admin = db.relationship("User", backref="approved_Enrollments", foreign_keys=[approved_by])
+
+    __table_args__ = (
+        UniqueConstraint('student_id', 'course_id', name='uq_student_course'),
+    )
