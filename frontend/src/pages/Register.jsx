@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { toast, ToastContainer } from "react-toastify";
 import { TypeAnimation } from "react-type-animation";
 import ParticleBackground from "../components/ParticleBackground";
+import { UserContext } from "../context/UserContext";
 import "react-toastify/dist/ReactToastify.css";
 
 export default function Register() {
@@ -12,23 +13,21 @@ export default function Register() {
   const [loading, setLoading] = useState(false);
   const [darkMode, setDarkMode] = useState(true);
 
+  const { register_user } = useContext(UserContext);
+
   const toggleTheme = () => setDarkMode(!darkMode);
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    // Optionally validate role
     if (!role) {
       toast.error("Please select a role.");
       return;
     }
 
     setLoading(true);
-    setTimeout(() => {
-      setLoading(false);
-      toast.success(`Registered as ${role}!`);
-      // Simulate redirect or API call here
-    }, 1500);
+    register_user(name, email, password, role)
+      .finally(() => setLoading(false));
   };
 
   const handleRoleChange = (e) => {
@@ -56,9 +55,7 @@ export default function Register() {
 
       <button
         onClick={toggleTheme}
-        className={`btn btn-sm ${
-          darkMode ? "btn-outline-light" : "btn-outline-dark"
-        } position-absolute top-0 end-0 m-3`}
+        className={`btn btn-sm ${darkMode ? "btn-outline-light" : "btn-outline-dark"} position-absolute top-0 end-0 m-3`}
       >
         {darkMode ? "🌙" : "☀️"}
       </button>
@@ -70,9 +67,7 @@ export default function Register() {
           maxWidth: "460px",
           borderRadius: "20px",
           backdropFilter: "blur(20px)",
-          backgroundColor: darkMode
-            ? "rgba(255,255,255,0.08)"
-            : "rgba(240, 248, 255, 0.85)",
+          backgroundColor: darkMode ? "rgba(255,255,255,0.08)" : "rgba(240, 248, 255, 0.85)",
           border: "1px solid rgba(255,255,255,0.2)",
           color: darkMode ? "#fff" : "#212529",
         }}
