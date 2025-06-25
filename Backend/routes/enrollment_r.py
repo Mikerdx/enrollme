@@ -20,12 +20,11 @@ def get_Enrollments():
     } for e in enrollments]), 200
 
 @Enrollment_bp.route("/Enrollments", methods=["POST"])
-@admin_required
 def enroll_User():
     data = request.get_json()
     course_id = data.get("course_id")
     student_id = data.get("student_id")
-    approved_by = get_jwt_identity()
+    approved_by = None
 
     if not all([course_id, student_id]):
         return jsonify({"error": "course_id and student_id are required"}), 400
@@ -35,6 +34,9 @@ def enroll_User():
 
     if not course or not student:
         return jsonify({"error": "Course or student not found"}), 404
+    
+    if Enrollment.query.filter_by(course_id=course_id, student_id=student_id).first():
+        return jsonify({"error": "Already enrolled"}), 400
 
     new_enrollment = Enrollment(course_id=course_id, student_id=student_id, approved_by=approved_by)
     db.session.add(new_enrollment)
@@ -43,7 +45,6 @@ def enroll_User():
     return jsonify({"message": "User enrolled successfully", "Enrollment_id": new_enrollment.id}), 201
 
 @Enrollment_bp.route("/Enrollments/<int:id>", methods=["DELETE"])
-@admin_required
 def delete_Enrollment(id):
     enrollment = Enrollment.query.get(id)
     if not enrollment:

@@ -22,8 +22,12 @@ def login():
         access_token = create_access_token(identity=user.id)
         return jsonify({
             "access_token": access_token,
-            "role": user.role,
-            "username": user.Username
+            "user": {
+                "id": user.id,
+                "username": user.Username,
+                "email": user.email,
+                "role": user.role
+            }
         }), 200
     else:
         return jsonify({"error": "User does not exist or wrong credentials"}), 400

@@ -40,7 +40,7 @@ def get_course(id):
     }), 200
 
 @course_bp.route("/Course", methods=["POST"])
-@admin_required
+@mentor_required
 def create_course():
     data = request.get_json()
     title = data.get("title")
@@ -66,6 +66,7 @@ def create_course():
 
 @course_bp.route("/Course/<int:id>", methods=["PATCH"])
 @admin_required
+@mentor_required
 def update_course(id):
     course = Course.query.get(id)
     if not course:
@@ -87,6 +88,7 @@ def update_course(id):
 
 @course_bp.route("/Course/<int:id>", methods=["DELETE"])
 @admin_required
+@mentor_required
 def delete_course(id):
     course = Course.query.get(id)
     if not course:

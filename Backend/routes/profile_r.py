@@ -67,7 +67,13 @@ def update_Profile():
     profile.avatar_url = data.get("avatar_url", profile.avatar_url)
 
     db.session.commit()
-    return jsonify({"message": "Profile updated"}), 200
+    return jsonify({
+        "id": profile.id,
+        "bio": profile.bio,
+        "avatar_url": profile.avatar_url,
+        "User_id": profile.User_id,
+        "created_at": profile.created_at
+    }), 200
 
 @Profile_bp.route("/Profiles/me", methods=["DELETE"])
 @jwt_required()
