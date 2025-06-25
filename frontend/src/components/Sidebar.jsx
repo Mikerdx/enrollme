@@ -1,4 +1,3 @@
-// src/components/Sidebar.jsx
 import React, { useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
@@ -39,15 +38,10 @@ export default function Sidebar({ role, darkMode }) {
               👤 Profile
             </Link>
           </li>
-          <li className="nav-item mb-2">
-            <Link to="/courses" className={`nav-link fw-semibold ${linkColor}`}>
-              📚 Courses
-            </Link>
-          </li>
-          {role === "admin" && (
+          {role === "student" && (
             <li className="nav-item mb-2">
-              <Link to="/users" className={`nav-link fw-semibold ${linkColor}`}>
-                👥 Manage Users
+              <Link to="/courses" className={`nav-link fw-semibold ${linkColor}`}>
+                📚 Courses
               </Link>
             </li>
           )}

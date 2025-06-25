@@ -1,33 +1,63 @@
-// src/pages/Profile.jsx
 import React, { useEffect, useState, useContext } from "react";
 import { UserContext } from "../context/UserContext";
 import { toast } from "react-toastify";
 
 export default function Profile() {
   const { auth_token } = useContext(UserContext);
-  const [profile, setProfile] = useState(null);
+  const [profileExists, setProfileExists] = useState(false);
   const [bio, setBio] = useState("");
   const [avatarUrl, setAvatarUrl] = useState("");
   const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
+  const [processing, setProcessing] = useState(false);
+  const fetchProfile = () => {
+    setLoading(true);
     fetch("http://localhost:5000/Profiles/me", {
       headers: { Authorization: `Bearer ${auth_token}` },
     })
       .then((res) => res.json())
       .then((data) => {
-        if (data.error) toast.error(data.error);
-        else {
-          setProfile(data);
+        if (data.error) {
+          setProfileExists(false);
+          setBio("");
+          setAvatarUrl("");
+        } else {
+          setProfileExists(true);
           setBio(data.bio || "");
           setAvatarUrl(data.avatar_url || "");
         }
       })
       .catch(() => toast.error("Failed to fetch profile"))
       .finally(() => setLoading(false));
+  };
+
+  useEffect(() => {
+    fetchProfile();
   }, [auth_token]);
 
+  const handleCreate = () => {
+    setProcessing(true);
+    fetch("http://localhost:5000/Profiles", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${auth_token}`,
+      },
+      body: JSON.stringify({ bio, avatar_url: avatarUrl }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) toast.error(data.error);
+        else {
+          toast.success("Profile created successfully");
+          fetchProfile();
+        }
+      })
+      .catch(() => toast.error("Create failed"))
+      .finally(() => setProcessing(false));
+  };
+
   const handleUpdate = () => {
+    setProcessing(true);
     fetch("http://localhost:5000/Profiles/me", {
       method: "PATCH",
       headers: {
@@ -39,9 +69,36 @@ export default function Profile() {
       .then((res) => res.json())
       .then((data) => {
         if (data.error) toast.error(data.error);
-        else toast.success("Profile updated successfully");
+        else {
+          toast.success("Profile updated successfully");
+          fetchProfile();
+        }
       })
-      .catch(() => toast.error("Update failed"));
+      .catch(() => toast.error("Update failed"))
+      .finally(() => setProcessing(false));
+  };
+
+  const handleDelete = () => {
+    if (!window.confirm("Are you sure you want to delete your profile?")) return;
+    setProcessing(true);
+    fetch("http://localhost:5000/Profiles/me", {
+      method: "DELETE",
+      headers: {
+        Authorization: `Bearer ${auth_token}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) toast.error(data.error);
+        else {
+          toast.success("Profile deleted successfully");
+          setBio("");
+          setAvatarUrl("");
+          setProfileExists(false);
+        }
+      })
+      .catch(() => toast.error("Delete failed"))
+      .finally(() => setProcessing(false));
   };
 
   if (loading) return <div className="text-center mt-5 text-light">Loading...</div>;
@@ -75,29 +132,29 @@ export default function Profile() {
             🧑 My Profile
           </h2>
 
-          <div className="mb-4 text-center">
-            {avatarUrl ? (
-              <img
-                src={avatarUrl}
-                alt="Avatar"
-                className="rounded-circle border border-secondary"
-                style={{ width: "120px", height: "120px", objectFit: "cover" }}
-              />
-            ) : (
-              <div
-                className="rounded-circle bg-secondary d-inline-block"
-                style={{
-                  width: "120px",
-                  height: "120px",
-                  lineHeight: "120px",
-                  color: "#fff",
-                  textAlign: "center",
-                }}
-              >
-                No Avatar
+          {profileExists && (
+            <div className="mb-4 text-center">
+              <div className="mb-2">
+                <strong>Bio:</strong>
+                <div className="text-light">{bio || <span className="text-muted">No bio set.</span>}</div>
               </div>
-            )}
-          </div>
+              <div className="mb-2">
+                <strong>Avatar:</strong>
+                <div>
+                  {avatarUrl ? (
+                    <img
+                      src={avatarUrl}
+                      alt="Avatar"
+                      className="rounded-circle border border-secondary"
+                      style={{ width: "120px", height: "120px", objectFit: "cover" }}
+                    />
+                  ) : (
+                    <span className="text-muted">No Avatar</span>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="mb-3">
             <label className="form-label text-light">Bio</label>
@@ -118,13 +175,34 @@ export default function Profile() {
               placeholder="https://example.com/avatar.png"
             />
           </div>
-          
-
-          
-
-          <button className="btn btn-outline-light w-100" onClick={handleUpdate}>
-            Update Profile
-          </button>
+          <div className="d-flex gap-2">
+            {!profileExists ? (
+              <button
+                className="btn btn-success flex-grow-1"
+                onClick={handleCreate}
+                disabled={processing}
+              >
+                {processing ? "Creating..." : "Create Profile"}
+              </button>
+            ) : (
+              <>
+                <button
+                  className="btn btn-outline-light flex-grow-1"
+                  onClick={handleUpdate}
+                  disabled={processing}
+                >
+                  {processing ? "Updating..." : "Update Profile"}
+                </button>
+                <button
+                  className="btn btn-danger flex-grow-1"
+                  onClick={handleDelete}
+                  disabled={processing}
+                >
+                  {processing ? "Deleting..." : "Delete Profile"}
+                </button>
+              </>
+            )}
+          </div>
         </div>
       </div>
     </div>

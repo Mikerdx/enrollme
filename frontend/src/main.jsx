@@ -4,7 +4,8 @@ import { BrowserRouter } from 'react-router-dom';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './index.css';
 import App from './App.jsx';
-import { UserProvider } from './context/UserContext';
+import UserProvider from "./context/UserContext";
+
 
 const root = document.getElementById('root');
 

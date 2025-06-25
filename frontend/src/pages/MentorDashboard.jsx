@@ -1,12 +1,24 @@
-// src/pages/MentorDashboard.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect, useContext } from "react";
+import { UserContext } from "../context/UserContext";
+import { toast } from "react-toastify";
 
 export default function MentorDashboard() {
+  const { authToken, user } = useContext(UserContext); 
   const [courses, setCourses] = useState([]);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
   });
+
+  useEffect(() => {
+    if (!authToken) return;
+    fetch("http://localhost:5000/Course/my", {
+      headers: { Authorization: `Bearer ${authToken}` },
+    })
+      .then((res) => res.json())
+      .then((data) => setCourses(data))
+      .catch(() => toast.error("Failed to fetch courses"));
+  }, [authToken]);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -17,12 +29,37 @@ export default function MentorDashboard() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const newCourse = {
-      id: Date.now(),
+    if (!formData.title || !formData.description) {
+      toast.error("Please fill in all fields.");
+      return;
+    }
+    if (!authToken) {
+      toast.error("You are not authenticated.");
+      return;
+    }
+    const payload = {
       ...formData,
+      mentor_id: user?.id,
     };
-    setCourses((prev) => [...prev, newCourse]);
-    setFormData({ title: "", description: "" });
+    fetch("http://localhost:5000/Course", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+      body: JSON.stringify(payload),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) {
+          toast.error(data.error);
+        } else {
+          toast.success("Course added!");
+          setCourses((prev) => [...prev, data]);
+          setFormData({ title: "", description: "" });
+        }
+      })
+      .catch(() => toast.error("Failed to add course"));
   };
 
   return (

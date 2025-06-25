@@ -1,10 +1,4 @@
-// src/components/CourseCard.jsx
-import { useContext } from "react";
-import { UserContext } from "../context/UserContext";
-
 export default function CourseCard({ course, enrolled, onEnroll }) {
-  const { currentUser } = useContext(UserContext); // ✅ direct check
-
   return (
     <div
       className="card h-100 border-0 shadow-sm text-white"
@@ -24,30 +18,20 @@ export default function CourseCard({ course, enrolled, onEnroll }) {
         </div>
 
         <div className="mt-3">
-          {currentUser ? (
-            enrolled ? (
-              <button className="btn btn-success w-100" disabled>
-                ✅ Enrolled
-              </button>
-            ) : (
-              <button
-                className="btn btn-outline-light w-100"
-                onClick={() => onEnroll(course.id)}
-              >
-                Enroll
-              </button>
-            )
+          {enrolled ? (
+            <button className="btn btn-success w-100" disabled>
+              ✅ Enrolled
+            </button>
           ) : (
             <button
-              className="btn btn-outline-secondary w-100"
-              disabled
-              title="Login to enroll"
+              className="btn btn-outline-light w-100"
+              onClick={() => onEnroll(course.id)}
             >
-              🔒 Login to Enroll
+              Enroll
             </button>
           )}
         </div>
       </div>
     </div>
   );
-}
+  }

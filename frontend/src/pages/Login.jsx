@@ -1,5 +1,5 @@
 import { useState, useContext } from "react";
-import { toast, ToastContainer } from "react-toastify";
+import { ToastContainer } from "react-toastify";
 import { TypeAnimation } from "react-type-animation";
 import ParticleBackground from "../components/ParticleBackground";
 import "react-toastify/dist/ReactToastify.css";
@@ -22,7 +22,7 @@ export default function Login() {
     setLoading(false);
 
     if (res) {
-      navigate("/Dashboard"); // Redirect to home/dashboard after login
+      navigate("/Dashboard"); 
     }
   };
 

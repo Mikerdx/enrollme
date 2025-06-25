@@ -1,28 +1,67 @@
-// src/pages/Courses.jsx
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import CourseCard from "../components/CourseCard";
 import { UserContext } from "../context/UserContext";
-
-const dummyCourses = [
-  { id: 1, title: "Full-Stack Web Dev", mentor: "Fatuma Ali" },
-  { id: 2, title: "Intro to Python", mentor: "Alex Kariuki" },
-  { id: 3, title: "React & API Integration", mentor: "J. Kim" },
-  { id: 4, title: "Data Structures", mentor: "Mike Bett" },
-  { id: 5, title: "ML Basics", mentor: "Njeri Mwangi" },
-];
+import { toast } from "react-toastify";
 
 export default function Courses() {
-  const { currentUser, loading } = useContext(UserContext);
+  const { authToken, currentUser, loading } = useContext(UserContext);
+  const [courses, setCourses] = useState([]);
   const [enrollments, setEnrollments] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/Course", {
+      headers: { Authorization: `Bearer ${authToken}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) setCourses(data);
+        else setCourses([]);
+      })
+      .catch(() => setCourses([]));
+  }, [authToken]);
+
+  useEffect(() => {
+    if (!authToken) return;
+    fetch("http://localhost:5000/Enrollments", {
+      headers: { Authorization: `Bearer ${authToken}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setEnrollments(
+            data
+              .filter((e) => e.student_id === currentUser?.id)
+              .map((e) => e.course_id)
+          );
+        }
+      })
+      .catch(() => {});
+  }, [authToken, currentUser]);
 
   if (loading) return <div>Loading courses...</div>;
 
-  const isLoggedIn = !!currentUser;
-
-  const handleEnroll = (id) => {
-    if (!enrollments.includes(id)) {
-      setEnrollments([...enrollments, id]);
+  const handleEnroll = (courseId) => {
+    if (!authToken) {
+      toast.error("You must be logged in to enroll.");
+      return;
     }
+    fetch("http://localhost:5000/Enrollments", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+      body: JSON.stringify({ course_id: courseId }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) toast.error(data.error);
+        else {
+          toast.success("Enrolled successfully!");
+          setEnrollments((prev) => [...prev, courseId]);
+        }
+      })
+      .catch(() => toast.error("Enrollment failed"));
   };
 
   return (
@@ -57,16 +96,19 @@ export default function Courses() {
         </p>
 
         <div className="row g-4">
-          {dummyCourses.map((course) => (
-            <div key={course.id} className="col-sm-12 col-md-6 col-lg-4">
-              <CourseCard
-                course={course}
-                enrolled={enrollments.includes(course.id)}
-                onEnroll={isLoggedIn ? handleEnroll : null}
-                isLoggedIn={isLoggedIn} // <-- Pass this!
-              />
-            </div>
-          ))}
+          {courses.length === 0 ? (
+            <div className="col-12 text-muted">No available courses.</div>
+          ) : (
+            courses.map((course) => (
+              <div key={course.id} className="col-sm-12 col-md-6 col-lg-4">
+                <CourseCard
+                  course={course}
+                  enrolled={enrollments.includes(course.id)}
+                  onEnroll={handleEnroll}
+                />
+              </div>
+            ))
+          )}
         </div>
       </div>
     </div>

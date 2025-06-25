@@ -1,4 +1,3 @@
-// src/components/Topbar.jsx
 import React from "react";
 
 export default function Topbar({ role, darkMode, setDarkMode }) {

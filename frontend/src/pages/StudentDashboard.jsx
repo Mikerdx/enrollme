@@ -1,4 +1,3 @@
-// src/pages/StudentDashboard.jsx
 import React, { useState } from "react";
 import CourseCard from "../components/CourseCard";
 
@@ -8,10 +7,10 @@ const dummyCourses = [
   { id: 3, title: "Machine Learning Basics", mentor: "J. Kim" },
 ];
 
-const enrolled = [1]; // dummy enrolled course IDs
+const enrolled = [1]; 
 
 export default function StudentDashboard() {
-  const [courses, setCourses] = useState(dummyCourses);
+  const [courses] = useState(dummyCourses);
   const [enrollments, setEnrollments] = useState(enrolled);
 
   const handleEnroll = (id) => {

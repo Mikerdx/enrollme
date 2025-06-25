@@ -1,14 +1,14 @@
-// src/pages/Dashboard.jsx
-import React, { useState } from "react";
-import Sidebar from "../components/Sidebar";
+import React, { useState, useContext } from "react";
 import Topbar from "../components/Topbar";
 import StudentDashboard from "./StudentDashboard";
 import MentorDashboard from "./MentorDashboard";
 import AdminDashboard from "./AdminDashboard";
+import { UserContext } from "../context/UserContext";
 
 export default function Dashboard() {
   const [darkMode, setDarkMode] = useState(true);
-  const role = "student"; 
+  const { user } = useContext(UserContext);
+  const role = user?.role || "student"; 
 
   const background = darkMode
     ? "linear-gradient(135deg, #0f172a, #1e293b)"
@@ -25,16 +25,13 @@ export default function Dashboard() {
         overflow: "hidden",
       }}
     >
-      <Sidebar role={role} darkMode={darkMode} />
       <div className="flex-grow-1 d-flex flex-column">
         <Topbar role={role} darkMode={darkMode} setDarkMode={setDarkMode} />
 
         <div className="p-5" style={{ overflowY: "auto" }}>
-          {/* Load role-specific dashboard */}
           {role === "student" && <StudentDashboard />}
           {role === "mentor" && <MentorDashboard />}
           {role === "admin" && <AdminDashboard />}
-          {/* Future: Add MentorDashboard / AdminDashboard here */}
         </div>
       </div>
     </div>

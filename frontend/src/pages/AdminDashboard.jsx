@@ -1,14 +1,42 @@
-// src/pages/AdminDashboard.jsx
-import React, { useState } from "react";
-
-const dummyUsers = [
-  { id: 1, name: "Fatuma Ali", email: "fatuma@example.com", role: "student" },
-  { id: 2, name: "Alex Kariuki", email: "alex@example.com", role: "mentor" },
-  { id: 3, name: "Mikerdx", email: "admin@example.com", role: "admin" },
-];
+import React, { useState, useEffect, useContext } from "react";
+import { UserContext } from "../context/UserContext";
+import { toast } from "react-toastify";
 
 export default function AdminDashboard() {
-  const [users] = useState(dummyUsers);
+  const { authToken } = useContext(UserContext);
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    fetch("http://localhost:5000/Users", {
+      headers: { Authorization: `Bearer ${authToken}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) setUsers(data);
+        else setUsers([]);
+      })
+      .catch(() => {
+        toast.error("Failed to load users");
+        setUsers([]);
+      });
+  }, [authToken]);
+
+  const handleDelete = (userId) => {
+    if (!window.confirm("Are you sure you want to delete this user?")) return;
+    fetch(`http://localhost:5000/Users/${userId}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${authToken}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) toast.error(data.error);
+        else {
+          toast.success("User deleted!");
+          setUsers((prev) => prev.filter((u) => u.id !== userId));
+        }
+      })
+      .catch(() => toast.error("Failed to delete user"));
+  };
 
   return (
     <div className="container py-4">
@@ -22,6 +50,7 @@ export default function AdminDashboard() {
               <th>Name</th>
               <th>Email</th>
               <th>Role</th>
+              <th>Action</th>
             </tr>
           </thead>
           <tbody>
@@ -39,6 +68,14 @@ export default function AdminDashboard() {
                   } text-capitalize`}>
                     {u.role}
                   </span>
+                </td>
+                <td>
+                  <button
+                    className="btn btn-sm btn-danger"
+                    onClick={() => handleDelete(u.id)}
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}
