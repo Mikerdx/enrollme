@@ -1,7 +1,7 @@
 from flask import Blueprint, request, jsonify
 from Backend.models import db, Profile, User
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from auth_decorators import admin_required
+from Backend.auth_decorators import admin_required
 
 Profile_bp = Blueprint("Profile_bp", __name__)
 

@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from Backend.models import db, Reviews, Course, User
-from auth_decorators import student_required
+from Backend.auth_decorators import student_required
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 Reviews_bp = Blueprint("Reviews_bp", __name__)

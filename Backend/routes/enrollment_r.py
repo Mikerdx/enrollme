@@ -1,6 +1,6 @@
 from flask import Blueprint, request, jsonify
 from Backend.models import db, Enrollment, Course, User
-from auth_decorators import admin_required
+from Backend.auth_decorators import admin_required
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 Enrollment_bp = Blueprint("Enrollment_bp", __name__)
