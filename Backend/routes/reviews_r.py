@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from models import db, Reviews, Course, User
+from Backend.models import db, Reviews, Course, User
 from auth_decorators import student_required
 from flask_jwt_extended import jwt_required, get_jwt_identity
 

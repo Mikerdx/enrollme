@@ -1,8 +1,8 @@
 from flask import Blueprint, request, jsonify
-from models import db, Course
+from Backend.models import db, Course
+from Backend.models.user import User
 from auth_decorators import admin_required, mentor_required
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from models.user import User
 
 course_bp = Blueprint("course_bp", __name__)
 
