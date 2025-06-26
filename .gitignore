@@ -1,0 +1,48 @@
+# Environment variables
+.env
+
+# Python bytecode & virtualenv
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+.Python
+.env.bak
+venv/
+.venv/
+env/
+ENV/
+
+# Flask & SQLAlchemy artifacts
+instance/
+app.db
+*.sqlite3
+
+# Node & Vite build files
+Frontend/node_modules/
+Frontend/dist/
+Frontend/.vite/
+
+# VSCode / JetBrains / other IDE settings
+.vscode/
+.idea/
+*.sublime-project
+*.sublime-workspace
+
+# System files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+
+# Coverage & testing
+htmlcov/
+.coverage
+.tox/
+.nox/
+.pytest_cache/
+
+# Render build artifacts (if any)
+build/
