@@ -62,6 +62,24 @@ export default function MentorDashboard() {
       .catch(() => toast.error("Failed to add course"));
   };
 
+  // Delete course function
+  const handleDelete = (courseId) => {
+    if (!window.confirm("Are you sure you want to delete this course?")) return;
+    fetch(`http://localhost:5000/Course/${courseId}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${authToken}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.error) toast.error(data.error);
+        else {
+          toast.success("Course deleted!");
+          setCourses((prev) => prev.filter((c) => c.id !== courseId));
+        }
+      })
+      .catch(() => toast.error("Failed to delete course"));
+  };
+
   return (
     <div className="container py-4">
       <h3 className="fw-bold mb-4">👨‍🏫 Mentor Dashboard</h3>
@@ -104,13 +122,21 @@ export default function MentorDashboard() {
       ) : (
         <ul className="list-group">
           {courses.map((course) => (
-            <li key={course.id} className="list-group-item">
-              <strong>{course.title}</strong> <br />
-              <small className="text-muted">{course.description}</small>
+            <li key={course.id} className="list-group-item d-flex justify-content-between align-items-center">
+              <div>
+                <strong>{course.title}</strong> <br />
+                <small className="text-muted">{course.description}</small>
+              </div>
+              <button
+                className="btn btn-sm btn-danger"
+                onClick={() => handleDelete(course.id)}
+              >
+                Delete
+              </button>
             </li>
           ))}
         </ul>
       )}
     </div>
   );
-}
+  }

@@ -65,7 +65,6 @@ def create_course():
     }), 201
 
 @course_bp.route("/Course/<int:id>", methods=["PATCH"])
-@admin_required
 @mentor_required
 def update_course(id):
     course = Course.query.get(id)
@@ -87,7 +86,6 @@ def update_course(id):
     }), 200
 
 @course_bp.route("/Course/<int:id>", methods=["DELETE"])
-@admin_required
 @mentor_required
 def delete_course(id):
     course = Course.query.get(id)

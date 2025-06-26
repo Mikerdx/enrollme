@@ -1,3 +1,11 @@
+import os
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from flask_cors import CORS
+from dotenv import load_dotenv
+
+load_dotenv()
+
 from datetime import timedelta
 from flask import Flask, request, jsonify
 from flask_sqlalchemy import SQLAlchemy
@@ -31,7 +39,7 @@ app.config['MAIL_PASSWORD'] = 'flhk jhao patw tgbn'
 app.config['MAIL_DEFAULT_SENDER'] = 'mman73942@gmail.com'
 
 app.config['JWT_SECRET_KEY'] = 'sjusefvyilgfvksbhvfiknhalvufn'
-app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=2)
+app.config['JWT_ACCESS_TOKEN_EXPIRES'] = timedelta(hours=200)
 app.config["JWT_VERIFY_SUB"] = False
 
 
@@ -61,4 +69,4 @@ def check_if_token_revoked(jwt_header, jwt_payload: dict) -> bool:
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=False, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))

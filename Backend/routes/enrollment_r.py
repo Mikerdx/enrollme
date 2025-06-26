@@ -20,10 +20,11 @@ def get_Enrollments():
     } for e in enrollments]), 200
 
 @Enrollment_bp.route("/Enrollments", methods=["POST"])
+@jwt_required()
 def enroll_User():
     data = request.get_json()
     course_id = data.get("course_id")
-    student_id = data.get("student_id")
+    student_id = get_jwt_identity()
     approved_by = None
 
     if not all([course_id, student_id]):
