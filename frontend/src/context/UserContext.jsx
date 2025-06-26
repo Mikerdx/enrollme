@@ -6,6 +6,7 @@ export const UserContext = createContext();
 
 const UserProviderWrapper = ({ children }) => {
   const navigate = useNavigate();
+  const baseURL = import.meta.env.VITE_API_BASE_URL;
 
   const [user, setUser] = useState(null);
   const [authToken, setAuthToken] = useState(() => localStorage.getItem("access_token"));
@@ -13,7 +14,7 @@ const UserProviderWrapper = ({ children }) => {
 
   useEffect(() => {
     if (authToken) {
-      fetch("http://localhost:5000/Users/me", {
+      fetch(`${baseURL}/Users/me`, {
         method: "GET",
         headers: { Authorization: `Bearer ${authToken}` },
       })
@@ -35,38 +36,37 @@ const UserProviderWrapper = ({ children }) => {
     } else {
       setLoading(false);
     }
-  }, [authToken]);
+  }, [authToken, baseURL]);
 
-  
-const register_user = (username, email, password, role) => {
-  toast.loading("Registering...");
+  const register_user = (username, email, password, role) => {
+    toast.loading("Registering...");
 
-  fetch("http://localhost:5000/Users", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ username, email, password, role }),
-  })
-    .then(res => res.json())
-    .then(data => {
-      toast.dismiss();
-
-      if (data.error) {
-        toast.error(data.error);
-      } else {
-        toast.success("Registration successful!");
-        navigate("/login");
-      }
+    fetch(`${baseURL}/Users`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ username, email, password, role }),
     })
-    .catch(err => {
-      toast.dismiss();
-      toast.error("Registration failed.");
-      console.error(err);
-    });
-};
+      .then(res => res.json())
+      .then(data => {
+        toast.dismiss();
+
+        if (data.error) {
+          toast.error(data.error);
+        } else {
+          toast.success("Registration successful!");
+          navigate("/login");
+        }
+      })
+      .catch(err => {
+        toast.dismiss();
+        toast.error("Registration failed.");
+        console.error(err);
+      });
+  };
 
   const login_user = (email, password) => {
     toast.loading("Logging in...");
-    return fetch("http://localhost:5000/auth/login", {
+    return fetch(`${baseURL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),
@@ -97,7 +97,7 @@ const register_user = (username, email, password, role) => {
   };
 
   const logout_user = () => {
-    fetch("http://localhost:5000/logout", {
+    fetch(`${baseURL}/logout`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${authToken}` },
     })

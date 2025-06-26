@@ -7,9 +7,10 @@ export default function Courses() {
   const { authToken, currentUser, loading } = useContext(UserContext);
   const [courses, setCourses] = useState([]);
   const [enrollments, setEnrollments] = useState([]);
+  const baseURL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
-    fetch("http://localhost:5000/Course", {
+    fetch(`${baseURL}/Course`, {
       headers: { Authorization: `Bearer ${authToken}` },
     })
       .then((res) => res.json())
@@ -18,11 +19,11 @@ export default function Courses() {
         else setCourses([]);
       })
       .catch(() => setCourses([]));
-  }, [authToken]);
+  }, [authToken, baseURL]);
 
   useEffect(() => {
     if (!authToken) return;
-    fetch("http://localhost:5000/Enrollments", {
+    fetch(`${baseURL}/Enrollments`, {
       headers: { Authorization: `Bearer ${authToken}` },
     })
       .then((res) => res.json())
@@ -36,7 +37,7 @@ export default function Courses() {
         }
       })
       .catch(() => {});
-  }, [authToken, currentUser]);
+  }, [authToken, currentUser, baseURL]);
 
   if (loading) return <div>Loading courses...</div>;
 
@@ -45,7 +46,7 @@ export default function Courses() {
       toast.error("You must be logged in to enroll.");
       return;
     }
-    fetch("http://localhost:5000/Enrollments", {
+    fetch(`${baseURL}/Enrollments`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

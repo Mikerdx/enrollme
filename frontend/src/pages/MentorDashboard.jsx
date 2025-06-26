@@ -3,22 +3,24 @@ import { UserContext } from "../context/UserContext";
 import { toast } from "react-toastify";
 
 export default function MentorDashboard() {
-  const { authToken, user } = useContext(UserContext); 
+  const { authToken, user } = useContext(UserContext);
   const [courses, setCourses] = useState([]);
   const [formData, setFormData] = useState({
     title: "",
     description: "",
   });
 
+  const baseURL = import.meta.env.VITE_API_BASE_URL;
+
   useEffect(() => {
     if (!authToken) return;
-    fetch("http://localhost:5000/Course/my", {
+    fetch(`${baseURL}/Course/my`, {
       headers: { Authorization: `Bearer ${authToken}` },
     })
       .then((res) => res.json())
       .then((data) => setCourses(data))
       .catch(() => toast.error("Failed to fetch courses"));
-  }, [authToken]);
+  }, [authToken, baseURL]);
 
   const handleChange = (e) => {
     setFormData((prev) => ({
@@ -37,11 +39,13 @@ export default function MentorDashboard() {
       toast.error("You are not authenticated.");
       return;
     }
+
     const payload = {
       ...formData,
       mentor_id: user?.id,
     };
-    fetch("http://localhost:5000/Course", {
+
+    fetch(`${baseURL}/Course`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -62,10 +66,10 @@ export default function MentorDashboard() {
       .catch(() => toast.error("Failed to add course"));
   };
 
-  // Delete course function
   const handleDelete = (courseId) => {
     if (!window.confirm("Are you sure you want to delete this course?")) return;
-    fetch(`http://localhost:5000/Course/${courseId}`, {
+
+    fetch(`${baseURL}/Course/${courseId}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${authToken}` },
     })
@@ -139,4 +143,4 @@ export default function MentorDashboard() {
       )}
     </div>
   );
-  }
+}

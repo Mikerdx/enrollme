@@ -9,9 +9,11 @@ export default function Profile() {
   const [avatarUrl, setAvatarUrl] = useState("");
   const [loading, setLoading] = useState(true);
   const [processing, setProcessing] = useState(false);
+  const baseURL = import.meta.env.VITE_API_BASE_URL;
+
   const fetchProfile = () => {
     setLoading(true);
-    fetch("http://localhost:5000/Profiles/me", {
+    fetch(`${baseURL}/Profiles/me`, {
       headers: { Authorization: `Bearer ${auth_token}` },
     })
       .then((res) => res.json())
@@ -36,7 +38,7 @@ export default function Profile() {
 
   const handleCreate = () => {
     setProcessing(true);
-    fetch("http://localhost:5000/Profiles", {
+    fetch(`${baseURL}/Profiles`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -58,7 +60,7 @@ export default function Profile() {
 
   const handleUpdate = () => {
     setProcessing(true);
-    fetch("http://localhost:5000/Profiles/me", {
+    fetch(`${baseURL}/Profiles/me`, {
       method: "PATCH",
       headers: {
         "Content-Type": "application/json",
@@ -81,11 +83,9 @@ export default function Profile() {
   const handleDelete = () => {
     if (!window.confirm("Are you sure you want to delete your profile?")) return;
     setProcessing(true);
-    fetch("http://localhost:5000/Profiles/me", {
+    fetch(`${baseURL}/Profiles/me`, {
       method: "DELETE",
-      headers: {
-        Authorization: `Bearer ${auth_token}`,
-      },
+      headers: { Authorization: `Bearer ${auth_token}` },
     })
       .then((res) => res.json())
       .then((data) => {

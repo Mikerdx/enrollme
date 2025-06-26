@@ -5,9 +5,10 @@ import { toast } from "react-toastify";
 export default function AdminDashboard() {
   const { authToken } = useContext(UserContext);
   const [users, setUsers] = useState([]);
+  const baseURL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
-    fetch("http://localhost:5000/Users", {
+    fetch(`${baseURL}/Users`, {
       headers: { Authorization: `Bearer ${authToken}` },
     })
       .then((res) => res.json())
@@ -19,11 +20,12 @@ export default function AdminDashboard() {
         toast.error("Failed to load users");
         setUsers([]);
       });
-  }, [authToken]);
+  }, [authToken, baseURL]);
 
   const handleDelete = (userId) => {
     if (!window.confirm("Are you sure you want to delete this user?")) return;
-    fetch(`http://localhost:5000/Users/${userId}`, {
+
+    fetch(`${baseURL}/Users/${userId}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${authToken}` },
     })
@@ -59,13 +61,15 @@ export default function AdminDashboard() {
                 <td>{u.name}</td>
                 <td>{u.email}</td>
                 <td>
-                  <span className={`badge bg-${
-                    u.role === "admin"
-                      ? "dark"
-                      : u.role === "mentor"
-                      ? "primary"
-                      : "secondary"
-                  } text-capitalize`}>
+                  <span
+                    className={`badge bg-${
+                      u.role === "admin"
+                        ? "dark"
+                        : u.role === "mentor"
+                        ? "primary"
+                        : "secondary"
+                    } text-capitalize`}
+                  >
                     {u.role}
                   </span>
                 </td>

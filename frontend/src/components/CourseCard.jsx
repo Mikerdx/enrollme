@@ -1,4 +1,3 @@
-// Example for Courses.jsx or StudentDashboard.jsx
 import React, { useContext, useState, useEffect } from "react";
 import { UserContext } from "../context/UserContext";
 import CourseCard from "../components/CourseCard";
@@ -8,17 +7,18 @@ export default function Courses() {
   const { authToken, currentUser } = useContext(UserContext);
   const [courses, setCourses] = useState([]);
   const [enrollments, setEnrollments] = useState([]);
+  const baseURL = import.meta.env.VITE_API_BASE_URL;
 
   useEffect(() => {
-    fetch("http://localhost:5000/Course", {
+    fetch(`${baseURL}/Course`, {
       headers: { Authorization: `Bearer ${authToken}` },
     })
       .then(res => res.json())
       .then(data => setCourses(Array.isArray(data) ? data : []));
-  }, [authToken]);
+  }, [authToken, baseURL]);
 
   useEffect(() => {
-    fetch("http://localhost:5000/Enrollments", {
+    fetch(`${baseURL}/Enrollments`, {
       headers: { Authorization: `Bearer ${authToken}` },
     })
       .then(res => res.json())
@@ -29,10 +29,10 @@ export default function Courses() {
           );
         }
       });
-  }, [authToken, currentUser]);
+  }, [authToken, currentUser, baseURL]);
 
   const handleEnroll = (courseId) => {
-    fetch("http://localhost:5000/Enrollments", {
+    fetch(`${baseURL}/Enrollments`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

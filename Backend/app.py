@@ -12,17 +12,22 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_mail import Mail
 from flask_jwt_extended import JWTManager
-from routes.auth import auth_bp
-from models import db
-from models.user import TokenBlocklist
-from routes.courses_r import course_bp
-from routes.reviews_r import Reviews_bp
-from routes.enrollment_r import Enrollment_bp
-from routes.profile_r import Profile_bp
-from routes.mentor_r import mentor_bp
-from routes.user_r import User_bp
 from flask_cors import CORS
-from auth_decorators import admin_required, mentor_required, student_required
+
+# Adjusted imports to reflect correct paths assuming this file is in Backend/app.py
+from Backend.routes.auth import auth_bp
+from Backend.routes.courses_r import course_bp
+from Backend.routes.reviews_r import Reviews_bp
+from Backend.routes.enrollment_r import Enrollment_bp
+from Backend.routes.profile_r import Profile_bp
+from Backend.routes.mentor_r import mentor_bp
+from Backend.routes.user_r import User_bp
+
+from Backend.models import db
+from Backend.models.user import TokenBlocklist
+
+from Backend.auth_decorators import admin_required, mentor_required, student_required
+
 
 
 app = Flask(__name__)
