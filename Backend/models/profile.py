@@ -1,4 +1,4 @@
-from .user import db
+from Backend.models.user import db
 from datetime import datetime
 class Profile(db.Model):
     __tablename__ = 'profiles'

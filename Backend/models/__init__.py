@@ -2,12 +2,12 @@ from flask_sqlalchemy import SQLAlchemy
 
 db = SQLAlchemy()
 
-from .user import User,TokenBlocklist
+from Backend.models.user import User,TokenBlocklist
 
-from .user import User
-from .user import TokenBlocklist
-from .courses import Course
-from .enrollment import Enrollment
-from .profile import Profile
-from .reviews import Reviews
-from .user import db  
+from Backend.models.user import User
+from Backend.models.user import TokenBlocklist
+from Backend.models.courses import Course
+from Backend.models.enrollment import Enrollment
+from Backend.models.profile import Profile
+from Backend.models.reviews import Reviews
+from Backend.models.user import db  

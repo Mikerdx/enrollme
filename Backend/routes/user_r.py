@@ -4,7 +4,7 @@ from Backend.models.user import User
 from werkzeug.security import generate_password_hash
 from flask_mail import Message
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from auth_decorators import admin_required
+from Backend.auth_decorators import admin_required
 from flask_cors import cross_origin
 
 User_bp = Blueprint("User_bp", __name__)
