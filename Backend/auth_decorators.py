@@ -1,4 +1,3 @@
-# auth_decorators.py
 from flask_jwt_extended import verify_jwt_in_request, get_jwt_identity
 from flask import jsonify
 from functools import wraps
